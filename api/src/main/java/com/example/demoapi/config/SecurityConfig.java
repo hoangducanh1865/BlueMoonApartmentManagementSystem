@@ -69,7 +69,10 @@ public class SecurityConfig {
                 "https://main.d164cthseo5mkf.amplifyapp.com",
                 "https://refactor.d164cthseo5mkf.amplifyapp.com",
                 "https://d1kyo8tlhbz0hy.cloudfront.net",
-                "http://localhost:3000" // For local development
+                "http://localhost:3000",
+                // Vercel
+                "https://bluemoon-apartment-management-system.vercel.app",
+                "https://*.vercel.app"
         ));
 
         // Cho phép các method
