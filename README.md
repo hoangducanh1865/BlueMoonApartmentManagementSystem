@@ -25,9 +25,10 @@ React with Vite and TypeScript for the frontend
 cd api
 docker compose down -v
 docker compose up -d
-docker exec -i apartment_postgres pg_restore -U myuser -d apartment_db --no-owner --no-acl < backup_test.sql
-docker exec -i apartment_postgres psql -U myuser -d apartment_db < V1_parking_management.sql
 ```
+
+Local development seeds sample data automatically from `api/src/main/resources/data.sql`.
+The older SQL dumps in `api/` are legacy references and do not need to be restored for the app to start.
 
 ### Run the API (BE)
 
@@ -120,13 +121,11 @@ Test connection and create database, from your local machine:
 psql -h apartment-db0.c5a0asik4hoo.ap-southeast-1.rds.amazonaws.com -U postgres -d postgres
 CREATE DATABASE apartment_db;
 \q
-pg_restore \
+psql \
   -h apartment-db0.c5a0asik4hoo.ap-southeast-1.rds.amazonaws.com \
   -U postgres \
   -d apartment_db \
-  --no-owner \
-  --no-acl \
-  api/backup_test.sql
+  -f api/src/main/resources/data.sql
 ```
 
 Check created database, from you local machine:

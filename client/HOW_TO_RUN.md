@@ -824,15 +824,9 @@ artifacts:
     - build/libs/*.jar
 ```
 
-### 1.3 Database Migration Script
+### 1.3 Database Seed Data
 
-Create `init-db.sql` in `api` folder with your schema:
-
-```sql
--- Export your current database schema
--- Run this on local database to generate:
-docker exec apartment_postgres pg_dump -U myuser -d apartment_db --schema-only > init-db.sql
-```
+The canonical local seed lives in `api/src/main/resources/data.sql`.
 
 ---
 

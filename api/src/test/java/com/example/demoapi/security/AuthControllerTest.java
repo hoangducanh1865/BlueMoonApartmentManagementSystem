@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @SpringBootTest
 @Transactional // Đảm bảo CSDL được rollback (hoàn tác) sau mỗi test
 @AutoConfigureMockMvc // Tự động cấu hình MockMvc
@@ -61,8 +60,8 @@ public class AuthControllerTest {
     private RefreshTokenRepository refreshTokenRepository; // Cần để dọn dẹp (nếu cần)
 
     /**
-     * Hàm này chạy TRƯỚC MỖI HÀM @Test,
-     * đảm bảo chúng ta luôn có 1 user "testuser" / "password123"
+     * Hàm này chạy TRƯỚC MỖI HÀM @Test, đảm bảo chúng ta luôn có 1 user
+     * "testuser" / "password123"
      */
     @BeforeEach
     void setup() {
@@ -95,7 +94,6 @@ public class AuthControllerTest {
     }
 
     // --- CÁC HÀM TEST ---
-
     @Test
     void test_Login_Success() throws Exception {
         // Arrange (Chuẩn bị DTO)
@@ -104,10 +102,10 @@ public class AuthControllerTest {
 
         // Act & Assert (Thực hiện & Kiểm tra)
         mockMvc.perform(post("/api/auth/login") // Giả lập POST /login
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(loginRequestJson))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loginRequestJson))
                 .andExpect(status().isOk()) // Mong đợi HTTP 200 OK
-            .andExpect(jsonPath("$.token").exists()) // Mong đợi body có trường "token"
+                .andExpect(jsonPath("$.token").exists()) // Mong đợi body có trường "token"
                 .andExpect(cookie().exists("refreshToken")) // Mong đợi có cookie tên "refreshToken"
                 .andExpect(cookie().httpOnly("refreshToken", true)); // Mong đợi cookie là HttpOnly
     }
@@ -120,9 +118,9 @@ public class AuthControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(loginRequestJson))
-            .andExpect(status().isBadRequest()); // Controller trả về HTTP 400 Bad Request cho sai mật khẩu
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loginRequestJson))
+                .andExpect(status().isBadRequest()); // Controller trả về HTTP 400 Bad Request cho sai mật khẩu
     }
 
     @Test
@@ -133,8 +131,8 @@ public class AuthControllerTest {
 
         // Chạy /login và lưu kết quả
         MvcResult loginResult = mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(loginRequestJson))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(loginRequestJson))
                 .andExpect(status().isOk())
                 .andReturn(); // Lấy kết quả trả về
 
@@ -148,7 +146,7 @@ public class AuthControllerTest {
 
         // Chạy /refresh và dùng cookie vừa lấy được
         MvcResult refreshResult = mockMvc.perform(post("/api/auth/refresh")
-                        .cookie(refreshTokenCookie)) // <-- Gắn cookie vào request
+                .cookie(refreshTokenCookie)) // <-- Gắn cookie vào request
                 .andExpect(status().isOk()) // Mong đợi 200 OK
                 .andExpect(jsonPath("$.accessToken").exists()) // Mong đợi accessToken MỚI
                 .andExpect(cookie().exists("refreshToken")) // Mong đợi cookie refreshToken MỚI
@@ -166,7 +164,7 @@ public class AuthControllerTest {
         System.out.println(">>> Testing /logout...");
 
         mockMvc.perform(post("/api/auth/logout")
-                        .cookie(rotatedCookie)) // <-- Gắn cookie MỚI NHẤT
+                .cookie(rotatedCookie)) // <-- Gắn cookie MỚI NHẤT
                 .andExpect(status().isOk()) // Mong đợi 200 OK
                 .andExpect(cookie().exists("refreshToken")) // Mong đợi server trả về cookie
                 .andExpect(cookie().maxAge("refreshToken", 0)); // Mong đợi cookie đã HẾT HẠN (maxAge = 0)
