@@ -1,0 +1,5 @@
+{
+  "name": "Bluemoon Resident Manager",
+  "description": "A comprehensive management system for Bluemoon Apartment residents and administrators, featuring fee payments, household management, and statistical reporting.",
+  "requestFramePermissions": []
+}

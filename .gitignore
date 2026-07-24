@@ -34,3 +34,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+tmp/
+debug/
+datasets/
+stuff/
+.metals/
+**/__pycache__/
+*.pyc
+
+.vscode/
+.github/

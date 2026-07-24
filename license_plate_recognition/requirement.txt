@@ -1,0 +1,19 @@
+opencv-python
+matplotlib
+numpy
+Pillow
+torch
+torchvision
+tqdm
+pyyaml
+requests
+pandas
+seaborn
+# For LP API and Gate Control App
+flask
+flask-cors
+fastapi
+uvicorn[standard]
+httpx
+python-multipart
+websockets
