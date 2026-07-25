@@ -19,13 +19,14 @@ const ResidentManager: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingResidentId, setEditingResidentId] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [editFormData, setEditFormData] = useState<Partial<ResidentMember>>({
+  const [editFormData, setEditFormData] = useState<Partial<ResidentMember> & { newRoomNumber?: string }>({
     fullName: '',
     dateOfBirth: '',
     relationToOwner: '',
     cccd: '',
     phoneNumber: '',
-    status: 'THUONG_TRU'
+    status: 'THUONG_TRU',
+    newRoomNumber: ''
   });
 
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
@@ -75,7 +76,8 @@ const ResidentManager: React.FC = () => {
       relationToOwner: resident.relationship,
       cccd: resident.cccd || '',
       phoneNumber: resident.phoneNumber || '',
-      status: resident.status || 'THUONG_TRU'
+      status: resident.status || 'THUONG_TRU',
+      newRoomNumber: ''
     });
     setIsEditModalOpen(true);
   };
@@ -354,6 +356,20 @@ const ResidentManager: React.FC = () => {
                     onChange={e => setEditFormData({ ...editFormData, cccd: e.target.value })}
                   />
                 </div>
+              </div>
+
+              <div className="border-t border-gray-100 pt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Căn hộ</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Nhập số phòng mới, ví dụ A-101"
+                  value={editFormData.newRoomNumber || ''}
+                  onChange={e => setEditFormData({ ...editFormData, newRoomNumber: e.target.value })}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Để trống nếu không đổi căn hộ. Nhập số phòng đã tồn tại để chuyển cư dân sang căn hộ đó.
+                </p>
               </div>
 
               <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">

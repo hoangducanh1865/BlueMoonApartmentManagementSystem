@@ -32,6 +32,7 @@ export interface Household {
   id: string;
   roomNumber: string; // e.g., "1204"
   ownerName: string;
+  ownerResidentId?: number | string;
   area: number; // m2
   memberCount: number;
   phoneNumber: string;
@@ -68,6 +69,7 @@ export interface ResidentInfo {
   cccd: string | null;
   roomNumber: string;
   building: string | null;
+  newRoomNumber?: string;
   hasAccount: boolean;
 }
 

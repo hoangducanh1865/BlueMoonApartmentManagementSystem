@@ -59,8 +59,34 @@ public class HouseholdService {
 
         Apartment savedApartment = apartmentRepository.save(apartment);
 
-        // 3. Xử lý Chủ Hộ (Logic: Nếu tồn tại thì tái sử dụng thông tin, nhưng tạo row mới)
-        Resident owner = new Resident();
+        // 3. Xử lý Chủ Hộ
+        Resident owner;
+
+        if (request.getOwnerResidentId() != null) {
+            owner = residentRepository.findById(request.getOwnerResidentId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy cư dân với ID: " + request.getOwnerResidentId()));
+
+            owner.setApartment(savedApartment);
+            owner.setIsHost(true);
+            owner.setRelationship("Chủ hộ");
+            owner.setState(owner.getState() != null ? owner.getState() : ResidentStatus.THUONG_TRU);
+            owner.setStartDate(LocalDate.now());
+            owner = residentRepository.save(owner);
+
+            return HouseholdResponse.builder()
+                    .id(savedApartment.getHouseid())
+                    .roomNumber(savedApartment.getApartmentNumber())
+                    .ownerName(owner.getName())
+                    .area(savedApartment.getArea())
+                    .memberCount(1L)
+                    .phoneNumber(owner.getPhonenumber())
+                    .building(savedApartment.getBuilding())
+                    .status(savedApartment.getStatus())
+                    .build();
+        }
+
+        // Logic cũ: Nếu tồn tại theo SĐT thì tái sử dụng thông tin, nhưng tạo row mới.
+        owner = new Resident();
 
         // Tìm xem ông chủ này (dựa theo SĐT) đã có trong hệ thống chưa (VD: Đang sở hữu nhà khác)
         Optional<Resident> existingOwner = residentRepository.findFirstByPhonenumber(request.getPhoneNumber());
@@ -75,7 +101,9 @@ public class HouseholdService {
             owner.setEmail(oldProfile.getEmail());
             owner.setAvatar(oldProfile.getAvatar());
             // Ghi chú là người này sở hữu nhiều nhà
-            owner.setNote("Đồng sở hữu căn hộ: " + oldProfile.getApartment().getApartmentNumber());
+            if (oldProfile.getApartment() != null) {
+                owner.setNote("Đồng sở hữu căn hộ: " + oldProfile.getApartment().getApartmentNumber());
+            }
         } else {
             // CASE: Chủ hộ mới tinh -> Lấy từ Request
             owner.setName(request.getOwnerName());
@@ -281,8 +309,8 @@ public class HouseholdService {
         Apartment targetApartment = resident.getApartment(); // Mặc định là nhà hiện tại
 
         if (request.getNewRoomNumber() != null && !request.getNewRoomNumber().isEmpty()) {
-            String currentRoom = resident.getApartment().getApartmentNumber();
-            if (!currentRoom.equals(request.getNewRoomNumber())) {
+            String currentRoom = resident.getApartment() != null ? resident.getApartment().getApartmentNumber() : null;
+            if (currentRoom == null || !currentRoom.equals(request.getNewRoomNumber())) {
                 targetApartment = apartmentRepository.findByApartmentNumber(request.getNewRoomNumber())
                         .orElseThrow(() -> new RuntimeException("Căn hộ mới không tồn tại!"));
             }
@@ -334,7 +362,7 @@ public class HouseholdService {
         }
 
         // 5. Gán vào căn hộ (Nếu có thay đổi nhà)
-        if (!resident.getApartment().getHouseid().equals(targetApartment.getHouseid())) {
+        if (targetApartment != null && (resident.getApartment() == null || !resident.getApartment().getHouseid().equals(targetApartment.getHouseid()))) {
             resident.setApartment(targetApartment);
             resident.setStartDate(LocalDate.now()); // Reset ngày vào ở
         }
@@ -352,6 +380,8 @@ public class HouseholdService {
                 .isHost(savedMember.getIsHost())
                 .status(savedMember.getState())
                 .cccd(savedMember.getCccd())
+                .roomNumber(savedMember.getApartment() != null ? savedMember.getApartment().getApartmentNumber() : "N/A")
+                .building(savedMember.getApartment() != null ? savedMember.getApartment().getBuilding() : "N/A")
                 .build();
     }
     public Page<ResidentResponse> getAllResidents(String keyword, Pageable pageable) {

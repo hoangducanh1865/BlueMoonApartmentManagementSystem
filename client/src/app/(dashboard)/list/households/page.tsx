@@ -20,6 +20,7 @@ const HouseholdManager: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Household>>({
     roomNumber: '',
+    ownerResidentId: '',
     ownerName: '',
     area: 0,
     memberCount: 0,
@@ -142,6 +143,7 @@ const HouseholdManager: React.FC = () => {
   const handleAdd = () => {
     setFormData({
       roomNumber: '',
+      ownerResidentId: '',
       ownerName: '',
       area: 0,
       memberCount: 0,
@@ -454,11 +456,27 @@ const HouseholdManager: React.FC = () => {
                   <Users className="w-4 h-4 mr-2" />
                   Thông tin chủ hộ
                 </h3>
+                {!editingId && (
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">ID hồ sơ cư dân làm chủ hộ</label>
+                    <input
+                      type="number"
+                      min="1"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="Nhập ID cư dân có sẵn"
+                      value={formData.ownerResidentId || ''}
+                      onChange={e => setFormData({ ...formData, ownerResidentId: e.target.value })}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Nếu nhập ID này, hệ thống sẽ dùng hồ sơ cư dân tương ứng làm chủ hộ và đồng bộ tên/SĐT từ hồ sơ đó.
+                    </p>
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Họ và tên chủ hộ</label>
                   <input
                     type="text"
-                    required={formData.status === ApartmentStatus.OCCUPIED}
+                    required={formData.status === ApartmentStatus.OCCUPIED && !formData.ownerResidentId}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Nguyễn Văn A"
                     value={formData.ownerName || ''}
@@ -469,7 +487,7 @@ const HouseholdManager: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại liên hệ</label>
                   <input
                     type="text"
-                    required={formData.status === ApartmentStatus.OCCUPIED}
+                    required={formData.status === ApartmentStatus.OCCUPIED && !formData.ownerResidentId}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="09xx.xxx.xxx"
                     value={formData.phoneNumber || ''}

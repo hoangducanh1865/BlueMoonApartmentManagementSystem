@@ -154,9 +154,13 @@ public class AuthenticationService {
             throw new RuntimeException("Email này đã được sử dụng!");
         }
 
+        if (request.getFullName() == null || request.getFullName().trim().isEmpty()) {
+            throw new RuntimeException("Họ và tên không được để trống!");
+        }
+
         // 3. Tạo hồ sơ cư dân mới. ID hồ sơ do DB tự sinh, mã cư dân do hệ thống tự cấp.
         Resident resident = new Resident();
-        resident.setName(defaultResidentName(request.getEmail()));
+        resident.setName(request.getFullName().trim());
         resident.setEmail(request.getEmail());
         resident.setPhonenumber(request.getPhoneNumber());
         resident.setState(ResidentStatus.TAM_TRU);
@@ -173,14 +177,6 @@ public class AuthenticationService {
         userAccountRepository.save(newUser);
         registrationCode.setResident(resident);
         registrationCodeService.markCodeUsed(registrationCode);
-    }
-
-    private String defaultResidentName(String email) {
-        int atIndex = email == null ? -1 : email.indexOf('@');
-        if (atIndex > 0) {
-            return email.substring(0, atIndex);
-        }
-        return "Cư dân mới";
     }
 
     private void ensureResidentCode(Resident resident) {

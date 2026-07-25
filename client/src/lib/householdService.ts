@@ -23,6 +23,7 @@ const getHeaders = () => {
 const preparePayload = (household: Partial<Household>) => {
   return {
     roomNumber: household.roomNumber,
+    ownerResidentId: household.ownerResidentId ? Number(household.ownerResidentId) : null,
     ownerName: household.ownerName || "",
     area: household.area,
     phoneNumber: household.phoneNumber || "",

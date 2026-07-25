@@ -8,6 +8,7 @@ import lombok.Data;
 public class HouseholdRequest {
     private String roomNumber;  // Số phòng (P1204)
     private String ownerName;   // Tên chủ hộ
+    private Integer ownerResidentId; // ID hồ sơ cư dân có sẵn để set làm chủ hộ
     private Double area;        // Diện tích
     private String phoneNumber; // SĐT chủ hộ
     private String email;       // Email chủ hộ

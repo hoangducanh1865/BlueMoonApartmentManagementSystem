@@ -53,6 +53,7 @@ export const login = async (email: string, password: string): Promise<User> => {
 };
 
 export const register = async (
+  fullName: string,
   email: string,
   password: string,
   residentCode: string,
@@ -66,7 +67,7 @@ export const register = async (
         "ngrok-skip-browser-warning": "true",
       },
       credentials: "include",
-      body: JSON.stringify({ email, password, residentCode, phoneNumber }),
+      body: JSON.stringify({ fullName, email, password, residentCode, phoneNumber }),
     });
 
     const responseText = await response.text();

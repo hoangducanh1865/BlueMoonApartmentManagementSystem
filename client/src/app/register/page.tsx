@@ -4,6 +4,7 @@ import { register } from '../../lib/authService';
 import { Lock, Mail, AlertCircle, Phone, CreditCard, User as UserIcon } from 'lucide-react';
 
 const RegisterPage: React.FC = () => {
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,7 +27,7 @@ const RegisterPage: React.FC = () => {
     setLoading(true);
 
     try {
-      await register(email, password, residentCode, phoneNumber);
+      await register(fullName, email, password, residentCode, phoneNumber);
       alert('Đăng ký thành công! Vui lòng đăng nhập.');
       navigate('/');
     } catch (err: any) {
@@ -53,6 +54,23 @@ const RegisterPage: React.FC = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Họ và tên</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <UserIcon className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Nguyễn Văn A"
+                />
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Mã đăng ký cư dân</label>
