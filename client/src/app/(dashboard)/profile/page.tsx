@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User, Household, RequestTicket, RequestChange, ApartmentStatus, ResidentMember } from '@/src/lib/types';
 import { MOCK_REQUESTS } from '../../../lib/mockData';
 import { getHouseholdById, getHouseholdMembers } from '../../../lib/householdService';
-import { User as UserIcon, Home, Phone, Users, Ruler, Edit3, History, Clock, CheckCircle, XCircle, Send, X, ArrowRight, Loader2, Building, Activity } from 'lucide-react';
+import { User as UserIcon, Home, Phone, Users, Ruler, Edit3, History, Clock, CheckCircle, XCircle, Send, X, ArrowRight, Loader2, Building, Activity, Hash } from 'lucide-react';
 
 interface ResidentProfileProps {
   user: User;
@@ -129,9 +129,15 @@ const ResidentProfile: React.FC<ResidentProfileProps> = ({ user }) => {
               <div>
                 <h2 className="text-xl font-bold text-gray-800">{user.fullName}</h2>
                 <p className="text-gray-500">{user.email}</p>
-                <span className="inline-block mt-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                  Cư dân
-                </span>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                    Cư dân
+                  </span>
+                  <span className="inline-flex items-center px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-medium">
+                    <Hash className="w-3 h-3 mr-1" />
+                    Mã cư dân: {user.residentCode ?? 'Chưa cấp'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

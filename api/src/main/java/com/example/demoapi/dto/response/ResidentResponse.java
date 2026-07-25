@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Builder
 public class ResidentResponse {
     private Integer id;
+    private Integer residentCode;
     private String name;
     private LocalDate dob;
     private String phoneNumber;

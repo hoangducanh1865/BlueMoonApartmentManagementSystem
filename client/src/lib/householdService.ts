@@ -78,7 +78,7 @@ export const getAllResidents = async (
     ...data,
     content: data.content.map((item: any) => ({
       ...item,
-      residentCode: item.residentCode || String(item.id),
+      residentCode: item.residentCode ? String(item.residentCode) : "",
     })),
   };
 };
@@ -178,7 +178,7 @@ export const getHouseholdMembers = async (
       relationToOwner: mapRelationship(item.relationship, item.isHost),
       cccd: item.cccd || "",
       phoneNumber: item.phoneNumber || "",
-      residentCode: String(item.id), // Use ID as resident code if not provided
+      residentCode: item.residentCode ? String(item.residentCode) : "",
       email: item.email || "",
       status: item.status || "",
     }));
@@ -228,7 +228,7 @@ export const addHouseholdMember = async (
     relationToOwner: mapRelationship(data.relationship, data.isHost),
     cccd: data.cccd,
     phoneNumber: data.phoneNumber,
-    residentCode: String(data.id),
+    residentCode: data.residentCode ? String(data.residentCode) : "",
     email: data.email || "",
     status: data.status || "",
   };
@@ -275,7 +275,7 @@ export const updateHouseholdMember = async (
     relationToOwner: mapRelationship(data.relationship, data.isHost),
     cccd: data.cccd,
     phoneNumber: data.phoneNumber,
-    residentCode: String(data.id),
+    residentCode: data.residentCode ? String(data.residentCode) : "",
     // Fallback to existing email if response doesn't contain it
     email: data.email || member.email || "",
     status: data.status || "",

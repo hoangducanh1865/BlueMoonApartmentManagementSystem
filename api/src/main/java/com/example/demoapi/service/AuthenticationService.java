@@ -5,6 +5,7 @@ import com.example.demoapi.dto.LoginResponse;
 import com.example.demoapi.dto.RefreshTokenResponse;
 import com.example.demoapi.dto.request.RegisterRequest;
 import com.example.demoapi.model.Resident;
+import com.example.demoapi.model.ResidentRegistrationCode;
 import com.example.demoapi.model.UserAccount;
 import com.example.demoapi.repository.ResidentRepository;
 import com.example.demoapi.repository.UserAccountRepository;
@@ -32,6 +33,7 @@ public class AuthenticationService {
     private final UserDetailsService userDetailsService;
     private final ResidentRepository residentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ResidentRegistrationCodeService registrationCodeService;
 
     // Class nội bộ để chứa kết quả trả về cho Controller (Body + Cookie Value)
     @Data
@@ -49,6 +51,7 @@ public class AuthenticationService {
     }
 
     // --- 1. LOGIN LOGIC ---
+    @Transactional
     public AuthResult login(LoginRequest request) {
         // A. Xác thực
         Authentication authentication = authenticationManager.authenticate(
@@ -64,6 +67,7 @@ public class AuthenticationService {
         // C. Lấy thông tin chi tiết từ DB để build JSON response đẹp
         UserAccount userAccount = userAccountRepository.findByEmail(request.email())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        ensureResidentCode(userAccount.getResident());
 
         // D. Mapping dữ liệu (UserAccount -> LoginResponse)
         LoginResponse loginResponse = buildLoginResponse(accessToken, userAccount);
@@ -107,12 +111,14 @@ public class AuthenticationService {
         String avatar = null;
         Integer householdId = null;
         Integer residentId = null;
+        Integer residentCode = null;
 
         if (resident != null) {
             email = resident.getEmail();
             fullName = resident.getName();
             avatar = resident.getAvatar();
             residentId = resident.getResidentid();
+            residentCode = resident.getResidentCode();
 
             // Lấy ID căn hộ nếu có
             if (resident.getApartment() != null) {
@@ -128,6 +134,7 @@ public class AuthenticationService {
                 .avatar(avatar)
                 .householdId(householdId)
                 .residentId(residentId)
+                .residentCode(residentCode)
                 .build();
 
         return LoginResponse.builder()
@@ -138,47 +145,57 @@ public class AuthenticationService {
 
     @Transactional
     public void register(RegisterRequest request) {
-        // 1. Parse residentCode sang Integer (vì trong DB residentid là Integer)
-        Integer residentId;
-        try {
-            residentId = Integer.parseInt(request.getResidentCode());
-        } catch (NumberFormatException e) {
-            throw new RuntimeException("Mã cư dân không hợp lệ (Phải là số)");
-        }
+        // 1. Mã đăng ký an toàn do BQL cấp, có hạn dùng và chỉ dùng một lần.
+        ResidentRegistrationCode registrationCode = registrationCodeService.getUsableCode(request.getResidentCode());
+        Resident resident = registrationCode.getResident();
 
-        // 2. Tìm cư dân trong DB (Dữ liệu gốc từ BQL)
-        Resident resident = residentRepository.findById(residentId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy cư dân với mã: " + residentId));
-
-        // 3. CHECK BẢO MẬT: Khớp lệnh Số điện thoại
+        // 2. CHECK BẢO MẬT: Khớp lệnh Số điện thoại
         // (So sánh SĐT người dùng nhập vs SĐT BQL đã nhập)
         if (!resident.getPhonenumber().equals(request.getPhoneNumber())) {
             throw new RuntimeException("Số điện thoại không khớp với dữ liệu đăng ký!");
         }
 
-        // 4. CHECK BẢO MẬT: Khớp lệnh Email (Tùy chọn, nhưng nên có)
+        // 3. CHECK BẢO MẬT: Khớp lệnh Email (Tùy chọn, nhưng nên có)
         // Đảm bảo user không dùng email của người khác để đăng ký cho resident này
         if (resident.getEmail() != null && !resident.getEmail().equalsIgnoreCase(request.getEmail())) {
             throw new RuntimeException("Email đăng ký không trùng khớp với hồ sơ cư dân!");
         }
 
-        // 5. Kiểm tra xem cư dân này đã có tài khoản chưa?
+        // 4. Kiểm tra xem cư dân này đã có tài khoản chưa?
         if (userAccountRepository.existsByResident(resident)) {
             throw new RuntimeException("Cư dân này đã có tài khoản rồi!");
         }
 
-        // 6. Kiểm tra xem Email này đã tồn tại trong bảng UserAccount chưa?
+        // 5. Kiểm tra xem Email này đã tồn tại trong bảng UserAccount chưa?
         if (userAccountRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email này đã được sử dụng!");
         }
 
-        // 7. Tạo UserAccount mới
+        // 6. Tạo UserAccount mới
         UserAccount newUser = new UserAccount();
         newUser.setEmail(request.getEmail()); // Username là Email
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setRole("RESIDENT"); // Mặc định là Cư dân
         newUser.setResident(resident); // Liên kết khóa ngoại (Quan trọng!)
 
+        ensureResidentCode(resident);
+
         userAccountRepository.save(newUser);
+        registrationCodeService.markCodeUsed(registrationCode);
+    }
+
+    private void ensureResidentCode(Resident resident) {
+        if (resident != null && resident.getResidentCode() == null) {
+            resident.setResidentCode(nextResidentCode());
+            residentRepository.save(resident);
+        }
+    }
+
+    private synchronized Integer nextResidentCode() {
+        Integer maxResidentCode = residentRepository.findMaxResidentCode();
+        if (maxResidentCode != null && maxResidentCode > 0) {
+            return maxResidentCode + 1;
+        }
+        return residentRepository.countResidentProfiles().intValue();
     }
 }

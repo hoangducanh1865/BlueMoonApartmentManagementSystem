@@ -55,7 +55,7 @@ const RegisterPage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mã cư dân (BQL cấp)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mã đăng ký cư dân</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <CreditCard className="h-5 w-5 text-gray-400" />
@@ -66,7 +66,7 @@ const RegisterPage: React.FC = () => {
                     value={residentCode}
                     onChange={(e) => setResidentCode(e.target.value)}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Nhập mã cư dân"
+                    placeholder="Mã do BQL cấp"
                   />
                 </div>
               </div>

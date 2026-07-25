@@ -199,6 +199,7 @@ public class HouseholdService {
         return residents.stream()
                 .map(resident -> ResidentResponse.builder()
                         .id(resident.getResidentid())
+                        .residentCode(resident.getResidentCode())
                         .name(resident.getName())
                         .dob(resident.getDob())
                         .phoneNumber(resident.getPhonenumber())
@@ -258,6 +259,7 @@ public class HouseholdService {
         // 5. Trả về Response
         return ResidentResponse.builder()
                 .id(savedMember.getResidentid())
+                .residentCode(savedMember.getResidentCode())
                 .name(savedMember.getName())
                 .dob(savedMember.getDob())
                 .phoneNumber(savedMember.getPhonenumber())
@@ -342,6 +344,7 @@ public class HouseholdService {
 
         return ResidentResponse.builder()
                 .id(savedMember.getResidentid())
+                .residentCode(savedMember.getResidentCode())
                 .name(savedMember.getName())
                 .dob(savedMember.getDob())
                 .phoneNumber(savedMember.getPhonenumber())
@@ -358,6 +361,7 @@ public class HouseholdService {
         // 2. Map từ Entity sang DTO
         return residentPage.map(resident -> ResidentResponse.builder()
                 .id(resident.getResidentid())
+                .residentCode(resident.getResidentCode())
                 .name(resident.getName())
                 .dob(resident.getDob())
                 .phoneNumber(resident.getPhonenumber())

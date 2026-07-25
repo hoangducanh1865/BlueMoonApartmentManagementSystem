@@ -12,6 +12,9 @@ public class Resident {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer residentid;
 
+    @Column(name = "resident_code", unique = true)
+    private Integer residentCode;
+
     @ManyToOne
     @JoinColumn(name = "houseid", referencedColumnName = "houseid")
     private Apartment apartment;

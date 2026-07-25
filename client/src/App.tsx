@@ -12,6 +12,7 @@ import HouseholdManager from './app/(dashboard)/list/households/page';
 import ResidentManager from './app/(dashboard)/list/residents/page';
 import RequestManager from './app/(dashboard)/list/requests/page';
 import FeeManager from './app/(dashboard)/admin/fees/page';
+import RegistrationCodesPage from './app/(dashboard)/admin/registration-codes/page';
 import InvoiceManager from './app/(dashboard)/list/invoices/page';
 import RegistrationManager from './app/(dashboard)/list/registrations/page';
 import ResidentRegistration from './app/(dashboard)/owner/page';
@@ -164,6 +165,14 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute user={user} allowedRoles={[Role.ADMIN]}>
                 <FeeManager />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/registration-codes"
+            element={
+              <ProtectedRoute user={user} allowedRoles={[Role.ADMIN]}>
+                <RegistrationCodesPage />
               </ProtectedRoute>
             }
           />

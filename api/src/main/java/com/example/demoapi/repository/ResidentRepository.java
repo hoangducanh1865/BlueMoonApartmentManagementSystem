@@ -14,6 +14,12 @@ public interface ResidentRepository extends JpaRepository<Resident, Integer> {
     // Spring Data JPA tự hiểu: "Tìm một UserAccount bằng cột username"
     Optional<Resident> findByResidentid(Integer residentid);
 
+    @Query("SELECT COALESCE(MAX(r.residentCode), 0) FROM Resident r")
+    Integer findMaxResidentCode();
+
+    @Query("SELECT COUNT(r) FROM Resident r")
+    Long countResidentProfiles();
+
     Optional<Resident> findFirstByPhonenumber(String phonenumber);
 
     Optional<Resident> findByApartment_HouseidAndIsHostTrue(Integer houseId);

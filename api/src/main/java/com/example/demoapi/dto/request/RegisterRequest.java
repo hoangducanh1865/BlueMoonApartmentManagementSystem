@@ -6,6 +6,6 @@ import lombok.Data;
 public class RegisterRequest {
     private String email;
     private String password;
-    private String residentCode; // Tương ứng với residentid
+    private String residentCode; // Mã đăng ký do BQL cấp
     private String phoneNumber;
 }

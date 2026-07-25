@@ -25,5 +25,6 @@ public class LoginResponse {
         private String avatar;
         private Integer householdId; // ID căn hộ
         private Integer residentId;  // ID cư dân
+        private Integer residentCode; // Mã cư dân hiển thị
     }
 }

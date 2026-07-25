@@ -178,7 +178,7 @@ const ResidentManager: React.FC = () => {
                   {residents.map((r) => (
                     <tr key={r.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 font-mono text-blue-600 font-medium">
-                        {r.residentCode || r.id}
+                        {r.residentCode || 'Chưa cấp'}
                       </td>
                       <td className="px-6 py-4 font-medium text-gray-900 flex items-center">
                         <div className="p-1.5 bg-blue-50 text-blue-600 rounded-full mr-3">

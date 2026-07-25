@@ -25,6 +25,7 @@ export interface User {
   avatar?: string;
   householdId?: string; // Link to a household if resident
   residentId?: number;
+  residentCode?: number;
 }
 
 export interface Household {
