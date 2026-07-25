@@ -456,22 +456,20 @@ const HouseholdManager: React.FC = () => {
                   <Users className="w-4 h-4 mr-2" />
                   Thông tin chủ hộ
                 </h3>
-                {!editingId && (
-                  <div className="mb-3">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">ID hồ sơ cư dân làm chủ hộ</label>
-                    <input
-                      type="number"
-                      min="1"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      placeholder="Nhập ID cư dân có sẵn"
-                      value={formData.ownerResidentId || ''}
-                      onChange={e => setFormData({ ...formData, ownerResidentId: e.target.value })}
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Nếu nhập ID này, hệ thống sẽ dùng hồ sơ cư dân tương ứng làm chủ hộ và đồng bộ tên/SĐT từ hồ sơ đó.
-                    </p>
-                  </div>
-                )}
+                <div className="mb-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">ID hồ sơ cư dân làm chủ hộ</label>
+                  <input
+                    type="number"
+                    min="1"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    placeholder="Nhập ID cư dân có sẵn"
+                    value={formData.ownerResidentId || ''}
+                    onChange={e => setFormData({ ...formData, ownerResidentId: e.target.value })}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Hệ thống sẽ gán hồ sơ cư dân này làm chủ hộ, chuyển cư dân vào căn hộ hiện tại và đồng bộ lại trang danh sách cư dân.
+                  </p>
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Họ và tên chủ hộ</label>
                   <input

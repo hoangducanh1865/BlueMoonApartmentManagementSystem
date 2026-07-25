@@ -21,18 +21,21 @@ public class HouseholdResponse {
     // 3. owner.name
     private String ownerName;
 
-    // 4. a.area
+    // 4. owner.residentid
+    private Integer ownerResidentId;
+
+    // 5. a.area
     private Double area;
 
-    // 5. COUNT(r) -> Bắt buộc là LONG
+    // 6. COUNT(r) -> Bắt buộc là LONG
     private Long memberCount;
 
-    // 6. owner.phonenumber
+    // 7. owner.phonenumber
     private String phoneNumber;
 
-    // 7. a.building
+    // 8. a.building
     private String building;
 
-    // 8. a.status -> Bắt buộc là ENUM (giống trong Model Apartment)
+    // 9. a.status -> Bắt buộc là ENUM (giống trong Model Apartment)
     private ApartmentStatus status;
 }

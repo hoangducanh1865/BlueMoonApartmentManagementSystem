@@ -66,6 +66,15 @@ public class HouseholdService {
             owner = residentRepository.findById(request.getOwnerResidentId())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy cư dân với ID: " + request.getOwnerResidentId()));
 
+            if (request.getOwnerName() != null && !request.getOwnerName().isBlank()) {
+                owner.setName(request.getOwnerName().trim());
+            }
+            if (request.getPhoneNumber() != null && !request.getPhoneNumber().isBlank()) {
+                owner.setPhonenumber(request.getPhoneNumber().trim());
+            }
+            if (request.getEmail() != null && !request.getEmail().isBlank()) {
+                owner.setEmail(request.getEmail().trim());
+            }
             owner.setApartment(savedApartment);
             owner.setIsHost(true);
             owner.setRelationship("Chủ hộ");
@@ -77,6 +86,7 @@ public class HouseholdService {
                     .id(savedApartment.getHouseid())
                     .roomNumber(savedApartment.getApartmentNumber())
                     .ownerName(owner.getName())
+                    .ownerResidentId(owner.getResidentid())
                     .area(savedApartment.getArea())
                     .memberCount(1L)
                     .phoneNumber(owner.getPhonenumber())
@@ -126,6 +136,7 @@ public class HouseholdService {
                 .id(savedApartment.getHouseid())
                 .roomNumber(savedApartment.getApartmentNumber())
                 .ownerName(owner.getName())
+                .ownerResidentId(owner.getResidentid())
                 .area(savedApartment.getArea())
                 .memberCount(1L)
                 .phoneNumber(owner.getPhonenumber())
@@ -156,18 +167,8 @@ public class HouseholdService {
 
         Apartment savedApartment = apartmentRepository.save(apartment);
 
-        // 4. Cập nhật thông tin Chủ hộ
-        // Tìm ông chủ hiện tại của nhà này
-        Resident owner = residentRepository.findByApartment_HouseidAndIsHostTrue(id)
-                .orElseThrow(() -> new RuntimeException("Dữ liệu lỗi: Căn hộ này chưa có chủ hộ!"));
-
-        // Cập nhật thông tin cá nhân chủ hộ
-        owner.setName(request.getOwnerName());
-        owner.setPhonenumber(request.getPhoneNumber());
-        if (request.getEmail() != null) owner.setEmail(request.getEmail());
-
-        // Lưu lại
-        residentRepository.save(owner);
+        // 4. Cập nhật thông tin Chủ hộ và đồng bộ hồ sơ cư dân.
+        Resident owner = syncHouseholdOwner(savedApartment, request);
 
         // (Tùy chọn) Tính lại số lượng thành viên
          Long memberCount = residentRepository.countByApartment_Houseid(id);
@@ -177,12 +178,63 @@ public class HouseholdService {
                 .id(savedApartment.getHouseid())
                 .roomNumber(savedApartment.getApartmentNumber())
                 .ownerName(owner.getName())
+                .ownerResidentId(owner.getResidentid())
                 .area(savedApartment.getArea())
                 .phoneNumber(owner.getPhonenumber())
                 .memberCount(memberCount)
                 .building(savedApartment.getBuilding())
                 .status(savedApartment.getStatus())
                 .build();
+    }
+
+    private Resident syncHouseholdOwner(Apartment apartment, HouseholdRequest request) {
+        Resident owner;
+
+        if (request.getOwnerResidentId() != null) {
+            owner = residentRepository.findById(request.getOwnerResidentId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy cư dân với ID: " + request.getOwnerResidentId()));
+        } else {
+            owner = residentRepository.findByApartment_HouseidAndIsHostTrue(apartment.getHouseid())
+                    .orElseThrow(() -> new RuntimeException("Vui lòng nhập ID hồ sơ cư dân để set làm chủ hộ."));
+        }
+
+        demoteCurrentHosts(apartment.getHouseid(), owner.getResidentid());
+
+        if (request.getOwnerName() != null && !request.getOwnerName().isBlank()) {
+            owner.setName(request.getOwnerName().trim());
+        }
+        if (request.getPhoneNumber() != null && !request.getPhoneNumber().isBlank()) {
+            owner.setPhonenumber(request.getPhoneNumber().trim());
+        }
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            owner.setEmail(request.getEmail().trim());
+        }
+
+        owner.setApartment(apartment);
+        owner.setIsHost(true);
+        owner.setRelationship("Chủ hộ");
+        owner.setState(owner.getState() != null ? owner.getState() : ResidentStatus.THUONG_TRU);
+        owner.setStartDate(LocalDate.now());
+
+        if (apartment.getStatus() == ApartmentStatus.EMPTY) {
+            apartment.setStatus(ApartmentStatus.OCCUPIED);
+            apartmentRepository.save(apartment);
+        }
+
+        return residentRepository.save(owner);
+    }
+
+    private void demoteCurrentHosts(Integer houseId, Integer newOwnerResidentId) {
+        residentRepository.findByApartment_Houseid(houseId).stream()
+                .filter(resident -> Boolean.TRUE.equals(resident.getIsHost()))
+                .filter(resident -> !resident.getResidentid().equals(newOwnerResidentId))
+                .forEach(resident -> {
+                    resident.setIsHost(false);
+                    if ("Chủ hộ".equalsIgnoreCase(String.valueOf(resident.getRelationship()))) {
+                        resident.setRelationship("Thành viên");
+                    }
+                    residentRepository.save(resident);
+                });
     }
 
     @Transactional
