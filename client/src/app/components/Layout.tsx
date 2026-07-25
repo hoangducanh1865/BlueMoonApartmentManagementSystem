@@ -18,7 +18,8 @@ import {
   LucideIcon,
   Car,
   ClipboardList,
-  Activity
+  Activity,
+  KeyRound
 } from 'lucide-react';
 import { Role, User } from '@/src/lib/types';
 
@@ -36,6 +37,7 @@ const navigationConfig: NavLink[] = [
   { path: '/admin', label: 'Tổng quan', icon: PieChart, roles: [Role.ADMIN] },
   { path: '/list/households', label: 'Quản lý hộ khẩu', icon: Building, roles: [Role.ADMIN] },
   { path: '/list/residents', label: 'Quản lý cư dân', icon: UserCheck, roles: [Role.ADMIN] },
+  { path: '/admin/registration-codes', label: 'Mã đăng ký', icon: KeyRound, roles: [Role.ADMIN] },
   { path: '/admin/fees', label: 'Quản lý khoản thu', icon: Banknote, roles: [Role.ADMIN] },
   { path: '/list/invoices', label: 'Quản lý hóa đơn', icon: Receipt, roles: [Role.ADMIN] },
   { path: '/list/registrations', label: 'Tạm trú & Tạm vắng', icon: MapPin, roles: [Role.ADMIN] },
