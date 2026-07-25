@@ -133,7 +133,7 @@ const HouseholdForm: React.FC<HouseholdFormProps> = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">ID cư dân</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mã cư dân</label>
                 <input
                   type="number"
                   min="1"
@@ -170,7 +170,7 @@ const HouseholdForm: React.FC<HouseholdFormProps> = ({
 
             <p className="text-xs text-gray-500 mt-2 flex items-center">
               <Key className="w-3 h-3 mr-1" />
-              ID cư dân quyết định hồ sơ được gán làm chủ hộ; tên và SĐT sẽ được đồng bộ ngược vào hồ sơ cư dân đó.
+              Nhập đúng "Mã cư dân" (cột hiển thị trong danh sách thành viên) để gán người đó làm chủ hộ; tên và SĐT sẽ được đồng bộ ngược vào hồ sơ cư dân đó.
             </p>
           </div>
 

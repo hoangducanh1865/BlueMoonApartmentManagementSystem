@@ -11,8 +11,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ResidentRepository extends JpaRepository<Resident, Integer> {
+
     // Spring Data JPA tự hiểu: "Tìm một UserAccount bằng cột username"
     Optional<Resident> findByResidentid(Integer residentid);
+
+    // Tra theo mã cư dân hiển thị (resident_code) - dùng khi set chủ hộ từ UI
+    Optional<Resident> findByResidentCode(Integer residentCode);
 
     @Query("SELECT COALESCE(MAX(r.residentCode), 0) FROM Resident r")
     Integer findMaxResidentCode();

@@ -63,8 +63,10 @@ public class HouseholdService {
         Resident owner;
 
         if (request.getOwnerResidentId() != null) {
-            owner = residentRepository.findById(request.getOwnerResidentId())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy cư dân với ID: " + request.getOwnerResidentId()));
+            // Lưu ý: ownerResidentId từ UI là MÃ CƯ DÂN (resident_code) hiển thị cho người dùng,
+            // KHÔNG phải khóa chính (residentid) trong DB. Phải tra theo resident_code.
+            owner = residentRepository.findByResidentCode(request.getOwnerResidentId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy cư dân với mã: " + request.getOwnerResidentId()));
 
             if (request.getOwnerName() != null && !request.getOwnerName().isBlank()) {
                 owner.setName(request.getOwnerName().trim());
@@ -86,7 +88,7 @@ public class HouseholdService {
                     .id(savedApartment.getHouseid())
                     .roomNumber(savedApartment.getApartmentNumber())
                     .ownerName(owner.getName())
-                    .ownerResidentId(owner.getResidentid())
+                    .ownerResidentId(owner.getResidentCode())
                     .area(savedApartment.getArea())
                     .memberCount(1L)
                     .phoneNumber(owner.getPhonenumber())
@@ -136,7 +138,7 @@ public class HouseholdService {
                 .id(savedApartment.getHouseid())
                 .roomNumber(savedApartment.getApartmentNumber())
                 .ownerName(owner.getName())
-                .ownerResidentId(owner.getResidentid())
+                .ownerResidentId(owner.getResidentCode())
                 .area(savedApartment.getArea())
                 .memberCount(1L)
                 .phoneNumber(owner.getPhonenumber())
@@ -178,7 +180,7 @@ public class HouseholdService {
                 .id(savedApartment.getHouseid())
                 .roomNumber(savedApartment.getApartmentNumber())
                 .ownerName(owner.getName())
-                .ownerResidentId(owner.getResidentid())
+                .ownerResidentId(owner.getResidentCode())
                 .area(savedApartment.getArea())
                 .phoneNumber(owner.getPhonenumber())
                 .memberCount(memberCount)
@@ -191,11 +193,12 @@ public class HouseholdService {
         Resident owner;
 
         if (request.getOwnerResidentId() != null) {
-            owner = residentRepository.findById(request.getOwnerResidentId())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy cư dân với ID: " + request.getOwnerResidentId()));
+            // ownerResidentId đến từ UI là MÃ CƯ DÂN (resident_code), không phải khóa chính (residentid).
+            owner = residentRepository.findByResidentCode(request.getOwnerResidentId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy cư dân với mã: " + request.getOwnerResidentId()));
         } else {
             owner = residentRepository.findByApartment_HouseidAndIsHostTrue(apartment.getHouseid())
-                    .orElseThrow(() -> new RuntimeException("Vui lòng nhập ID hồ sơ cư dân để set làm chủ hộ."));
+                    .orElseThrow(() -> new RuntimeException("Vui lòng nhập mã cư dân để set làm chủ hộ."));
         }
 
         demoteCurrentHosts(apartment.getHouseid(), owner.getResidentid());
