@@ -456,42 +456,45 @@ const HouseholdManager: React.FC = () => {
                   <Users className="w-4 h-4 mr-2" />
                   Thông tin chủ hộ
                 </h3>
-                <div className="mb-3">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">ID hồ sơ cư dân làm chủ hộ</label>
-                  <input
-                    type="number"
-                    min="1"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Nhập ID cư dân có sẵn"
-                    value={formData.ownerResidentId || ''}
-                    onChange={e => setFormData({ ...formData, ownerResidentId: e.target.value })}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Hệ thống sẽ gán hồ sơ cư dân này làm chủ hộ, chuyển cư dân vào căn hộ hiện tại và đồng bộ lại trang danh sách cư dân.
-                  </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">ID cư dân</label>
+                    <input
+                      type="number"
+                      min="1"
+                      required={formData.status === ApartmentStatus.OCCUPIED}
+                      className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                      placeholder="Ví dụ: 2"
+                      value={formData.ownerResidentId || ''}
+                      onChange={e => setFormData({ ...formData, ownerResidentId: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Họ và tên chủ hộ</label>
+                    <input
+                      type="text"
+                      required={formData.status === ApartmentStatus.OCCUPIED && !formData.ownerResidentId}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="Nguyễn Văn A"
+                      value={formData.ownerName || ''}
+                      onChange={e => setFormData({ ...formData, ownerName: e.target.value })}
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại liên hệ</label>
+                    <input
+                      type="text"
+                      required={formData.status === ApartmentStatus.OCCUPIED && !formData.ownerResidentId}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="09xx.xxx.xxx"
+                      value={formData.phoneNumber || ''}
+                      onChange={e => setFormData({ ...formData, phoneNumber: e.target.value })}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Họ và tên chủ hộ</label>
-                  <input
-                    type="text"
-                    required={formData.status === ApartmentStatus.OCCUPIED && !formData.ownerResidentId}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Nguyễn Văn A"
-                    value={formData.ownerName || ''}
-                    onChange={e => setFormData({ ...formData, ownerName: e.target.value })}
-                  />
-                </div>
-                <div className="mt-3">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại liên hệ</label>
-                  <input
-                    type="text"
-                    required={formData.status === ApartmentStatus.OCCUPIED && !formData.ownerResidentId}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="09xx.xxx.xxx"
-                    value={formData.phoneNumber || ''}
-                    onChange={e => setFormData({ ...formData, phoneNumber: e.target.value })}
-                  />
-                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  ID cư dân quyết định hồ sơ được gán làm chủ hộ; tên và SĐT sẽ được đồng bộ ngược vào hồ sơ cư dân đó.
+                </p>
               </div>
 
               <div className="flex justify-end space-x-3 mt-6">
