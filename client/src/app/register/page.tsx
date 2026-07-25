@@ -66,7 +66,7 @@ const RegisterPage: React.FC = () => {
                     value={residentCode}
                     onChange={(e) => setResidentCode(e.target.value)}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="12345"
+                    placeholder="Nhập mã cư dân"
                   />
                 </div>
               </div>
@@ -154,10 +154,6 @@ const RegisterPage: React.FC = () => {
             <Link to="/" className="font-medium text-blue-600 hover:text-blue-500">
               Đăng nhập
             </Link>
-          </div>
-
-          <div className="mt-4 bg-yellow-50 p-3 rounded text-xs text-yellow-800 text-center">
-            Test Data: Mã cư dân <b>12345</b>, SĐT <b>0912123123</b>
           </div>
         </div>
       </div>
