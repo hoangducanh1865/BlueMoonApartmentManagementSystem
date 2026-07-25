@@ -16,7 +16,7 @@ public class ResidentRegistrationCode {
     @Column(nullable = false, unique = true, length = 80)
     private String code;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "residentid", referencedColumnName = "residentid")
     private Resident resident;
 

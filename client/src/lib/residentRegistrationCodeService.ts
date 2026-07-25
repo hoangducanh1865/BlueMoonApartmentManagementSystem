@@ -1,11 +1,6 @@
 export interface ResidentRegistrationCode {
   id: number;
   code: string;
-  residentId: number;
-  residentCode: number | null;
-  residentName: string;
-  residentPhone: string;
-  residentEmail: string | null;
   expiresAt: string;
   createdAt: string;
   usedAt: string | null;
@@ -42,14 +37,13 @@ export const getResidentRegistrationCodes = async (): Promise<
 };
 
 export const createResidentRegistrationCode = async (
-  residentId: number,
   ttlHours: number
 ): Promise<ResidentRegistrationCode> => {
   const response = await fetch(`${API_BASE_URL}/resident-registration-codes`, {
     method: "POST",
     headers: getHeaders(),
     credentials: "include",
-    body: JSON.stringify({ residentId, ttlHours }),
+    body: JSON.stringify({ ttlHours }),
   });
 
   if (!response.ok) {

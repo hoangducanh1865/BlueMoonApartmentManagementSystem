@@ -6,6 +6,7 @@ import com.example.demoapi.dto.RefreshTokenResponse;
 import com.example.demoapi.dto.request.RegisterRequest;
 import com.example.demoapi.model.Resident;
 import com.example.demoapi.model.ResidentRegistrationCode;
+import com.example.demoapi.model.ResidentStatus;
 import com.example.demoapi.model.UserAccount;
 import com.example.demoapi.repository.ResidentRepository;
 import com.example.demoapi.repository.UserAccountRepository;
@@ -147,41 +148,39 @@ public class AuthenticationService {
     public void register(RegisterRequest request) {
         // 1. Mã đăng ký an toàn do BQL cấp, có hạn dùng và chỉ dùng một lần.
         ResidentRegistrationCode registrationCode = registrationCodeService.getUsableCode(request.getResidentCode());
-        Resident resident = registrationCode.getResident();
 
-        // 2. CHECK BẢO MẬT: Khớp lệnh Số điện thoại
-        // (So sánh SĐT người dùng nhập vs SĐT BQL đã nhập)
-        if (!resident.getPhonenumber().equals(request.getPhoneNumber())) {
-            throw new RuntimeException("Số điện thoại không khớp với dữ liệu đăng ký!");
-        }
-
-        // 3. CHECK BẢO MẬT: Khớp lệnh Email (Tùy chọn, nhưng nên có)
-        // Đảm bảo user không dùng email của người khác để đăng ký cho resident này
-        if (resident.getEmail() != null && !resident.getEmail().equalsIgnoreCase(request.getEmail())) {
-            throw new RuntimeException("Email đăng ký không trùng khớp với hồ sơ cư dân!");
-        }
-
-        // 4. Kiểm tra xem cư dân này đã có tài khoản chưa?
-        if (userAccountRepository.existsByResident(resident)) {
-            throw new RuntimeException("Cư dân này đã có tài khoản rồi!");
-        }
-
-        // 5. Kiểm tra xem Email này đã tồn tại trong bảng UserAccount chưa?
+        // 2. Kiểm tra xem Email này đã tồn tại trong bảng UserAccount chưa?
         if (userAccountRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email này đã được sử dụng!");
         }
 
-        // 6. Tạo UserAccount mới
+        // 3. Tạo hồ sơ cư dân mới. ID hồ sơ do DB tự sinh, mã cư dân do hệ thống tự cấp.
+        Resident resident = new Resident();
+        resident.setName(defaultResidentName(request.getEmail()));
+        resident.setEmail(request.getEmail());
+        resident.setPhonenumber(request.getPhoneNumber());
+        resident.setState(ResidentStatus.TAM_TRU);
+        resident.setIsHost(false);
+        ensureResidentCode(resident);
+
+        // 4. Tạo UserAccount mới
         UserAccount newUser = new UserAccount();
         newUser.setEmail(request.getEmail()); // Username là Email
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setRole("RESIDENT"); // Mặc định là Cư dân
         newUser.setResident(resident); // Liên kết khóa ngoại (Quan trọng!)
 
-        ensureResidentCode(resident);
-
         userAccountRepository.save(newUser);
+        registrationCode.setResident(resident);
         registrationCodeService.markCodeUsed(registrationCode);
+    }
+
+    private String defaultResidentName(String email) {
+        int atIndex = email == null ? -1 : email.indexOf('@');
+        if (atIndex > 0) {
+            return email.substring(0, atIndex);
+        }
+        return "Cư dân mới";
     }
 
     private void ensureResidentCode(Resident resident) {
@@ -196,6 +195,6 @@ public class AuthenticationService {
         if (maxResidentCode != null && maxResidentCode > 0) {
             return maxResidentCode + 1;
         }
-        return residentRepository.countResidentProfiles().intValue();
+        return residentRepository.countResidentProfiles().intValue() + 1;
     }
 }

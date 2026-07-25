@@ -21,7 +21,6 @@ const statusLabel = (code: ResidentRegistrationCode) => {
 };
 
 const RegistrationCodesPage: React.FC = () => {
-  const [residentId, setResidentId] = useState("");
   const [ttlHours, setTtlHours] = useState(4);
   const [codes, setCodes] = useState<ResidentRegistrationCode[]>([]);
   const [createdCode, setCreatedCode] = useState<ResidentRegistrationCode | null>(null);
@@ -56,17 +55,10 @@ const RegistrationCodesPage: React.FC = () => {
     setError("");
     setCopied(false);
 
-    const parsedResidentId = Number(residentId);
-    if (!Number.isInteger(parsedResidentId) || parsedResidentId <= 0) {
-      setError("ID hồ sơ cư dân phải là một số hợp lệ");
-      return;
-    }
-
     setSubmitting(true);
     try {
-      const newCode = await createResidentRegistrationCode(parsedResidentId, ttlHours);
+      const newCode = await createResidentRegistrationCode(ttlHours);
       setCreatedCode(newCode);
-      setResidentId("");
       await loadCodes();
     } catch (err: any) {
       setError(err.message || "Không thể tạo mã đăng ký");
@@ -120,21 +112,6 @@ const RegistrationCodesPage: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                ID hồ sơ cư dân
-              </label>
-              <input
-                type="number"
-                min="1"
-                required
-                value={residentId}
-                onChange={(event) => setResidentId(event.target.value)}
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                placeholder="VD: 102"
-              />
-            </div>
-
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 Thời gian sống
@@ -195,8 +172,8 @@ const RegistrationCodesPage: React.FC = () => {
               <thead className="bg-slate-50">
                 <tr>
                   <th className="px-4 py-3 text-left font-semibold text-slate-600">Mã</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-600">Cư dân</th>
                   <th className="px-4 py-3 text-left font-semibold text-slate-600">Trạng thái</th>
+                  <th className="px-4 py-3 text-left font-semibold text-slate-600">Tạo lúc</th>
                   <th className="px-4 py-3 text-left font-semibold text-slate-600">Hết hạn</th>
                 </tr>
               </thead>
@@ -210,20 +187,13 @@ const RegistrationCodesPage: React.FC = () => {
                           {code.code}
                         </code>
                       </td>
-                      <td className="px-4 py-3 text-slate-700">
-                        <div className="font-medium text-slate-900">
-                          {code.residentName || `ID ${code.residentId}`}
-                        </div>
-                        <div className="text-xs text-slate-500">
-                          Hồ sơ #{code.residentId}
-                          {code.residentCode ? ` · Mã cư dân ${code.residentCode}` : ""}
-                          {` · ${code.residentPhone}`}
-                        </div>
-                      </td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${status.className}`}>
                           {status.text}
                         </span>
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">
+                        {formatDateTime(code.createdAt)}
                       </td>
                       <td className="px-4 py-3 text-slate-600">
                         {formatDateTime(code.expiresAt)}
